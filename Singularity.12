@@ -5,6 +5,9 @@ From:nvcr.io/nvidia/tensorflow:19.04-py3
 
 # GNU compiler
 %post
+    mkdir /mnt/dev
+    mkdir /mnt/proc
+    mkdir /mnt/sys
     mount --bind /dev /mnt/dev
     mount --bind /proc /mnt/proc
     mount --bind /sys /mnt/sys
