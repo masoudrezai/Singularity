@@ -5,6 +5,9 @@ From:nvcr.io/nvidia/tensorflow:19.04-py3
 
 # GNU compiler
 %post
+    mount --bind /dev /mnt/dev
+    mount --bind /proc /mnt/proc
+    mount --bind /sys /mnt/sys
     apt-get update -y
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         g++ \
