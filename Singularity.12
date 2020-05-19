@@ -1,16 +1,10 @@
 BootStrap: docker
-From:nvcr.io/nvidia/tensorflow:19.04-py3
+From: nvidia/cuda:10.1-devel-ubuntu16.04
 %post
     . /.singularity.d/env/10-docker*.sh
 
 # GNU compiler
 %post
-    mkdir /mnt/dev
-    mkdir /mnt/proc
-    mkdir /mnt/sys
-    mount --bind /dev /mnt/dev
-    mount --bind /proc /mnt/proc
-    mount --bind /sys /mnt/sys
     apt-get update -y
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         g++ \
@@ -24,16 +18,7 @@ From:nvcr.io/nvidia/tensorflow:19.04-py3
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         ca-certificates \
         gnupg \
-        tar \
-        bzip2 \
-        file \
-        wget \
-        hwloc \
-        libnuma-dev \
-        make \
-        openssh-client \
-        perl 
-
+        wget
     rm -rf /var/lib/apt/lists/*
 %post
     wget -qO - https://www.mellanox.com/downloads/ofed/RPM-GPG-KEY-Mellanox | apt-key add -
@@ -54,6 +39,7 @@ From:nvcr.io/nvidia/tensorflow:19.04-py3
         librdmacm-dev \
         librdmacm1
     rm -rf /var/lib/apt/lists/*
+
 %environment
 XDG_RUNTIME_DIR=""
 PATH=${PATH}:${LSF_BINDIR}
