@@ -43,7 +43,7 @@ apt-get -y install libomp-dev
 #echo 'export CUDNN_INCLUDE_PATH="/usr/local/cuda-10.0/include/"' >>$SINGULARITY_ENVIRONMENT
 #echo 'export CUDNN_LIBRARY_PATH="/usr/local/cuda-10.0/lib64/"' >>$SINGULARITY_ENVIRONMENT
 #echo 'export LIBRARY_PATH="/usr/local/cuda-10.0/lib64"' >>$SINGULARITY_ENVIRONMENT
-#echo 'export USE_CUDA=1 USE_CUDNN=1 USE_MKLDNN=1 USE_MPI=1 USE_CUDNN=ON' >>$SINGULARITY_ENVIRONMENT
+#echo 'export USE_CUDA=ON USE_CUDNN=ON USE_MKLDNN=ON USE_MKLDNN_CBLAS=ON USE_MPI=ON USE_CUDNN=ON USE_SYSTEM_NCCL=ON' >>$SINGULARITY_ENVIRONMENT
 
 #echo 'export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}' >>$SINGULARITY_ENVIRONMENT
 #/anaconda3/bin/git clone --branch v1.5.0 https://github.com/pytorch/pytorch.git /pytorch-1.5.0
