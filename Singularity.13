@@ -68,10 +68,10 @@ From:nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
     export LD_LIBRARY_PATH=/usr/local/openmpi/lib:$LD_LIBRARY_PATH
     export PATH=/usr/local/openmpi/bin:$PATH
     
-    Directory=anaconda_env_33312
+    Directory=anaconda_env_pytorch_apex
     if [ -d "$FILE" ]; then
         mkdir -p anaconda_env_33312
-        tar -xzf /anaconda3.tar.gz -C anaconda_env_33312
+        tar -xzf /anaconda3.tar.gz -C anaconda_env_pytorch_apex
     else 
         echo "$Directory already exist."
     fi
