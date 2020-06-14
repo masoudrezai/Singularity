@@ -1,29 +1,101 @@
-wget https://repo.continuum.io/archive/Anaconda3-2018.12-Linux-x86_64.sh
-bash Anac* -b -p /anaconda3
-conda install -y git
-conda install -y -c anaconda redis
-conda install -y -c conda-forge numactl-cos6-x86_64
-conda install -y -c conda-forge blas
-conda install -y numpy ninja pyyaml mkl mkl-include setuptools cmake cffi
-conda install -y -c pytorch magma-cuda101
-conda install -y -c conda-forge vim
-conda install -c anaconda ipyparallel
+BootStrap: docker
+From:nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
 
-#export CUDA_NVCC_EXECUTABLE="/usr/local/cuda-10.1/bin/nvcc"
-#export CUDA_HOME="/usr/local/cuda-10.1"
-#export CUDNN_INCLUDE_PATH="/usr/local/cuda-10.1/include/"
-#export CUDNN_LIBRARY_PATH="/usr/local/cuda-10.1/lib64/"
-#export LIBRARY_PATH="/usr/local/cuda-10.1/lib64"
+%post
+    . /.singularity.d/env/10-docker*.sh
 
-export USE_CUDA=ON USE_CUDNN=ON USE_MKLDNN=ON USE_MKLDNN_CBLAS=ON USE_MPI=ON USE_CUDNN=ON USE_SYSTEM_NCCL=ON
+# GNU compiler
+%post
+    apt-get update -y
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        g++ \
+        gcc \
+        gfortran
+    rm -rf /var/lib/apt/lists/*
 
-git clone --branch v1.5.0 https://github.com/pytorch/pytorch.git pytorch-1.5.0
-cd pytorch-1.5.0
-git submodule update --init --recursive
-export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
-python setup.py install
+# Mellanox OFED version 4.2-1.0.0.0
+%post
+    apt-get update -y
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        ca-certificates \
+        gnupg \
+        wget
+    rm -rf /var/lib/apt/lists/*
+%post
+    wget -qO - https://www.mellanox.com/downloads/ofed/RPM-GPG-KEY-Mellanox | apt-key add -
+    mkdir -p /etc/apt/sources.list.d && wget -q -nc --no-check-certificate -P /etc/apt/sources.list.d https://linux.mellanox.com/public/repo/mlnx_ofed/4.2-1.0.0.0/ubuntu16.04/mellanox_mlnx_ofed.list
+    apt-get update -y
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        ibverbs-utils \
+        libibmad \
+        libibmad-devel \
+        libibumad \
+        libibumad-devel \
+        libibverbs-dev \
+        libibverbs1 \
+        libmlx4-1 \
+        libmlx4-dev \
+        libmlx5-1 \
+        libmlx5-dev \
+        librdmacm-dev \
+        librdmacm1
+    rm -rf /var/lib/apt/lists/*
 
-git clone https://github.com/pytorch/vision.git vision
-cd vision
-python setup.py install
+# OpenMPI version 4.0.3
+%post
+    apt-get update -y
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        bzip2 \
+        file \
+        hwloc \
+        libnuma-dev \
+        make \
+        openssh-client \
+        perl \
+        tar \
+        wget
+    rm -rf /var/lib/apt/lists/*
+%post
+    cd /
+    mkdir -p /var/tmp && wget -q -nc --no-check-certificate -P /var/tmp https://www.open-mpi.org/software/ompi/v4.0/downloads/openmpi-4.0.3.tar.bz2
+    mkdir -p /var/tmp && tar -x -f /var/tmp/openmpi-4.0.3.tar.bz2 -C /var/tmp -j
+    cd /var/tmp/openmpi-4.0.3 &&  CC=gcc CXX=g++ F77=gfortran F90=gfortran FC=gfortran ./configure --prefix=/usr/local/openmpi --with-cuda --with-verbs
+    make -j$(nproc)
+    make -j$(nproc) install
+    rm -rf /var/tmp/openmpi-4.0.3 /var/tmp/openmpi-4.0.3.tar.bz2
+    wget https://repo.continuum.io/archive/Anaconda3-2018.12-Linux-x86_64.sh
+    bash Anac* -b -p /anaconda3
+    conda install -y git
+    conda install -y -c anaconda redis
+    conda install -y -c conda-forge numactl-cos6-x86_64
+    conda install -y -c conda-forge blas
+    conda install -y numpy ninja pyyaml mkl mkl-include setuptools cmake cffi
+    conda install -y -c pytorch magma-cuda101
+    conda install -y -c conda-forge vim
+    conda install -c anaconda ipyparallel
 
+    #export CUDA_NVCC_EXECUTABLE="/usr/local/cuda-10.1/bin/nvcc"
+    #export CUDA_HOME="/usr/local/cuda-10.1"
+    #export CUDNN_INCLUDE_PATH="/usr/local/cuda-10.1/include/"
+    #export CUDNN_LIBRARY_PATH="/usr/local/cuda-10.1/lib64/"
+    #export LIBRARY_PATH="/usr/local/cuda-10.1/lib64"
+
+    export USE_CUDA=ON USE_CUDNN=ON USE_MKLDNN=ON USE_MKLDNN_CBLAS=ON USE_MPI=ON USE_CUDNN=ON USE_SYSTEM_NCCL=ON
+
+    git clone --branch v1.5.0 https://github.com/pytorch/pytorch.git pytorch-1.5.0
+    cd pytorch-1.5.0
+    git submodule update --init --recursive
+    export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
+    python setup.py install
+
+    git clone https://github.com/pytorch/vision.git vision
+    cd vision
+    python setup.py install
+
+
+%environment
+    export LD_LIBRARY_PATH=/usr/local/openmpi/lib:$LD_LIBRARY_PATH
+    export PATH=/usr/local/openmpi/bin:$PATH
+%post
+    export LD_LIBRARY_PATH=/usr/local/openmpi/lib:$LD_LIBRARY_PATH
+    export PATH=/usr/local/openmpi/bin:$PATH
