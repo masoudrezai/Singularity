@@ -63,9 +63,23 @@ From:nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
     make -j$(nproc)
     make -j$(nproc) install
     rm -rf /var/tmp/openmpi-4.0.3 /var/tmp/openmpi-4.0.3.tar.bz2
+    wget https://owncloud.gwdg.de/index.php/s/X2Qr4lkhJig9IBn/download
 %environment
     export LD_LIBRARY_PATH=/usr/local/openmpi/lib:$LD_LIBRARY_PATH
     export PATH=/usr/local/openmpi/bin:$PATH
+    
+    Directory=anaconda_env_33312
+    if [ -d "$FILE" ]; then
+        mkdir -p anaconda_env_33312
+        tar -xzf /anaconda3.tar.gz -C anaconda_env_33312
+    else 
+        echo "$Directory already exist."
+    fi
+    
+    export PATH=/scratch2/imgNet/anaconda_env_33312/bin:$PATH
+    echo "slurmadmin:x:300:300::/opt/slurm/slurm:/bin/false" >> /etc/passwd
+    echo "slurmadmin:x:300:" >> /etc/group
+    export PATH="/opt/slurm/bin:$PATH"
 %post
     export LD_LIBRARY_PATH=/usr/local/openmpi/lib:$LD_LIBRARY_PATH
     export PATH=/usr/local/openmpi/bin:$PATH
