@@ -63,7 +63,7 @@ From:nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
     make -j$(nproc)
     make -j$(nproc) install
     rm -rf /var/tmp/openmpi-4.0.3 /var/tmp/openmpi-4.0.3.tar.bz2
-    wget https://owncloud.gwdg.de/index.php/s/X2Qr4lkhJig9IBn/download
+    wget -O anaconda3.tar.gz https://owncloud.gwdg.de/index.php/s/X2Qr4lkhJig9IBn/download
 %environment
     export LD_LIBRARY_PATH=/usr/local/openmpi/lib:$LD_LIBRARY_PATH
     export PATH=/usr/local/openmpi/bin:$PATH
