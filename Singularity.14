@@ -20,6 +20,13 @@ From:nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
         ca-certificates \
         gnupg \
         vnstat\
+        net-tools\
+        bmon\
+        iptraf\
+        cbm\
+        iperf3\
+        nload\
+        nethogs\
         wget
     rm -rf /var/lib/apt/lists/*
 %post
