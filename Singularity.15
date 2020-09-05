@@ -4,6 +4,7 @@ From:nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
 %post
     . /.singularity.d/env/10-docker*.sh
 
+
 # GNU compiler
 %post
     apt-get update -y
@@ -11,7 +12,8 @@ From:nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
         g++ \
         gcc \
         gfortran \
-        git
+        git\
+        cmake
     rm -rf /var/lib/apt/lists/*
 
 # Mellanox OFED version 4.2-1.0.0.0
@@ -26,6 +28,7 @@ From:nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
         iptraf\
         cbm\
         iperf3\
+        libxml2-dev\
         nload\
         tcptrack\
         nethogs\
@@ -81,14 +84,16 @@ From:nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
     make -j$(nproc)
     make -j$(nproc) install
     rm -rf /var/tmp/openmpi-4.0.3 /var/tmp/openmpi-4.0.3.tar.bz2
-    
+
 %post
-   git clone https://github.com/aws/aws-sdk-cpp.git
-   mkdir sdk_build
-   cd sdk_build
-   cmake ../aws-sdk-cpp/
-   make
-   make install
+   cd /
+   apt-get -y update
+   apt-get -y install git make
+   git clone https://github.com/bji/libs3.git 
+   cd libs3
+   make -j$(nproc)
+   make -j$(nproc) install
+
 %post
     mkdir -p /var/local/ && wget -q -nc --no-check-certificate -O /var/local/anaconda3.tar.gz https://owncloud.gwdg.de/index.php/s/X2Qr4lkhJig9IBn/download
 %environment
@@ -108,7 +113,6 @@ From:nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
     echo "slurmadmin:x:300:300::/opt/slurm/slurm:/bin/false" >> /etc/passwd
     echo "slurmadmin:x:300:" >> /etc/group
     export PATH="/opt/slurm/bin:$PATH"
-    
     File_test=$HOME/test_torch_1241.py
     if [ -f "$File_test" ]; then
         echo "Testing NCCL and MPI"
