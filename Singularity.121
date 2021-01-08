@@ -29,6 +29,7 @@ conda install --quiet --yes \
     'jupyterhub=1.0.0' \
     'jupyterlab=2.1.5'
 conda install -y pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
+conda install -y boto3
 curl -sL https://deb.nodesource.com/setup_8.x | bash -
 apt-get install -y nodejs
  
