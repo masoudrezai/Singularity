@@ -1,5 +1,5 @@
 Bootstrap: docker
-From:vistart/cuda:10.1-cudnn7-tensorrt6-devel-ubuntu18.04
+From:nvcr.io/nvidia/hpc-benchmarks:21.4-hpl
 #%environment
 #    export OMPI_DIR=/opt/ompi
 #    export SINGULARITY_OMPI_DIR=$OMPI_DIR
